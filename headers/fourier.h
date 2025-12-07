@@ -4,16 +4,17 @@
 #include <vector>
 #include <complex>
 
-void DFT(const std::vector<std::complex<double>>& x,
-         std::vector<std::complex<double>>& X);
+using namespace std;
 
-void IDFT(const std::vector<std::complex<double>>& X,
-          std::vector<std::complex<double>>& x);
+void DFT(const vector<complex<double>>& x,
+         vector<complex<double>>& X);
 
-void FFT(const std::vector<std::complex<double>>& x,
-         std::vector<std::complex<double>>& X);
+void IDFT(const vector<complex<double>>& X,
+          vector<complex<double>>& x);
 
-void IFFT(const std::vector<std::complex<double>>& X,
-          std::vector<std::complex<double>>& x);
+void FFT(vector<complex<double>>& x, int N, int start, int step);
+
+void IFFT(const vector<complex<double>>& X,
+          vector<complex<double>>& x);
 
 #endif // FOURIER_H

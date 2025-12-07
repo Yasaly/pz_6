@@ -1,9 +1,9 @@
 #include "../headers/fourier.h"
 #include <cmath>
+#include <complex>
 
 #define PI 3.14159265358979323846
 
-using std::complex;
 using namespace std;
 
 void DFT(const vector<complex<double>>& x,
@@ -45,54 +45,41 @@ void IDFT(const vector<complex<double>>& X,
 }
 
 
-void FFT(const vector<complex<double>>& x,
-         vector<complex<double>>& X)
-{
-    int N = static_cast<int>(x.size());
-    X.assign(N, complex<double>(0.0, 0.0));
-
-    if (N == 1)
-    {
-        X[0] = x[0];
-        return;
-    }
-
+void FFT(vector<complex<double>>& x, int N, int start, int step){
+    if (N == 1) return;
     int M = N / 2;
-    vector<complex<double>> x_u(M), x_v(M);
-    for (int i = 0; i < M; ++i)
-    {
-        x_u[i] = x[2 * i];
-        x_v[i]  = x[2 * i + 1];
-    }
 
-    vector<complex<double>> X_u, X_v;
-    FFT(x_u, X_u);
-    FFT(x_v,  X_v);
+    FFT(x, M, start, step * 2);
+    FFT(x, M, start + step, step * 2);
+    double angle_step = -2.0 * PI / static_cast<double>(N);
+    complex<double> w_step(cos(angle_step), sin(angle_step));
+    complex<double> w(1.0, 0.0);
 
     for (int m = 0; m < M; ++m)
     {
-        double angle = -2.0 * PI * m / N;
-        complex<double> w(cos(angle), sin(angle));
-        complex<double> t = w * X_v[m];
-
-        X[m]     = X_u[m] + t;
-        X[m + M] = X_u[m] - t;
+        int idx_u = start + step * (2 * m);
+        int idx_v = start + step * (2 * m + 1);
+        complex<double> u = x[idx_u];
+        complex<double> v = x[idx_v];
+        complex<double> t = w * v;
+        x[idx_u] = u + t;
+        x[idx_v] = u - t;
+        w *= w_step;
     }
 }
 
 void IFFT(const vector<complex<double>>& X,
           vector<complex<double>>& x)
 {
-    int N = static_cast<int>(X.size());
-    vector<complex<double>> X_conj(N);
+    x = X;
+    int N = static_cast<int>(x.size());
+    if (N == 0) return;
 
     for (int i = 0; i < N; ++i)
-        X_conj[i] = conj(X[i]);
+        x[i] = conj(x[i]);
 
-    vector<complex<double>> tmp;
-    FFT(X_conj, tmp);
+    FFT(x, N, 0, 1);
 
-    x.assign(N, complex<double>(0.0, 0.0));
     for (int i = 0; i < N; ++i)
-        x[i] = conj(tmp[i]) / static_cast<double>(N);
+        x[i] = conj(x[i]) / static_cast<double>(N);
 }

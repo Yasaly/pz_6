@@ -15,13 +15,13 @@ using namespace std;
 using std::vector;
 using std::complex;
 
-string flag = "6";
+string flag = "1-5";
 
 void printSpectrumTable(const vector<complex<double>>& X,
                         const vector<complex<double>>& z)
 {
     int N = static_cast<int>(X.size());
-    int SETW = 22;
+    int SETW = 15;
 
     cout << left << setw(SETW) << "m"
               << left << setw(SETW) << "Re z[m]"
@@ -98,7 +98,8 @@ int main()
     auto t2 = chrono::high_resolution_clock::now();
 
     auto t3 = chrono::high_resolution_clock::now();
-    FFT(z, Z_fft);
+    Z_fft = z;
+    FFT(Z_fft, N, 0, 1);
     auto t4 = chrono::high_resolution_clock::now();
 
     auto dft_time = chrono::duration<double, milli>(t2 - t1).count();
